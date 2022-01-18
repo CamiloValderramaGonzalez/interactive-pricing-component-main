@@ -4,6 +4,7 @@ import Head from "next/head";
 import Image from "next/image";
 
 import Slider from "../components/slider";
+import { priceSegments } from "../consts/priceSegments";
 
 const Home: NextPage = () => {
   const [valueSlider, setSlider] = useState(50);
@@ -26,33 +27,16 @@ const Home: NextPage = () => {
       "%,  hsl(224, 65%, 95%) " +
       value +
       "%,  hsl(224, 65%, 95%) 100%)";
-
     setSliderStyle(background);
     calcPrice(value, valueYearly);
     setSlider(value);
   };
 
   const calcPrice = (value: number, yearly: boolean) => {
-    let base = 0;
-    if (value >= 0 && value <= 20) {
-      setViewsCount("10K PAGEVIEWS");
-      base = 8;
-    } else if (value > 20 && value <= 40) {
-      setViewsCount("50K PAGEVIEWS");
-      base = 12;
-    } else if (value > 40 && value <= 60) {
-      setViewsCount("100K PAGEVIEWS");
-      base = 16;
-    } else if (value > 60 && value <= 80) {
-      setViewsCount("500K PAGEVIEWS");
-      base = 24;
-    } else if (value > 80 && value <= 100) {
-      setViewsCount("1M PAGEVIEWS");
-      base = 36;
-    }
-
-    let cost = yearly ? base * 0.75 : base;
-    setCost(cost);
+    let result = priceSegments.find((x) => x.min <= value && x.max >= value);
+    let cost = yearly ? result?.yerarlyCost : result?.montlyCost;
+    setCost(cost || 0);
+    setViewsCount(result?.viewCount || "");
   };
 
   return (
@@ -79,7 +63,6 @@ const Home: NextPage = () => {
                 <span id="price">${valueCost}.00</span>
                 <span className="card_duration">/month</span>
               </h2>
-
               <div className="card_content">
                 <p>Monthly Billing</p>
                 <input
@@ -99,17 +82,10 @@ const Home: NextPage = () => {
             </div>
             <div className="card_footer">
               <ul className="card_list">
-                <li className="card_item">                 
-                   {" Unlimited websites"}
-                </li>
-                <li className="card_item">                  
-                   {" 100% data ownership"}
-                </li>
-                <li className="card_item">                  
-                  {" Email reports"}
-                </li>
+                <li className="card_item">{" Unlimited websites"}</li>
+                <li className="card_item">{" 100% data ownership"}</li>
+                <li className="card_item">{" Email reports"}</li>
               </ul>
-
               <button className="btn btn--primary">Start my trial</button>
             </div>
           </article>
